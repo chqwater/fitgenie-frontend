@@ -1,16 +1,35 @@
 <template>
   <div class="auth-page">
-    <div class="blob blob--1" />
-    <div class="blob blob--2" />
+    <!-- 极光层 -->
+    <div class="aurora aurora--green" />
+    <div class="aurora aurora--pink" />
+    <div class="aurora aurora--purple" />
+    <div class="grid-overlay" />
+    <div class="scan-line" />
+
+    <!-- 粒子层 -->
+    <div class="particles">
+      <span
+        v-for="n in 16"
+        :key="n"
+        class="particle"
+        :style="particleStyle(n)"
+      />
+    </div>
 
     <div class="register-wrap">
       <!-- Logo -->
       <div class="logo" @click="router.push('/login')">
-        <span>🌿</span>
+        <div class="logo-orb">
+          <span class="logo-flame">🔥</span>
+          <span class="logo-ring" />
+        </div>
         <span class="logo-name">FitGenie</span>
       </div>
 
-      <div class="register-card card">
+      <div class="register-card glow-border">
+        <div class="card-shine" />
+
         <!-- 步骤指示器 -->
         <div class="steps">
           <div
@@ -25,15 +44,21 @@
             </div>
             <span class="step-label">{{ s }}</span>
           </div>
-          <div class="step-line" :style="{ width: step === 1 ? '0%' : '100%' }" />
+          <div class="step-line">
+            <div class="step-line-fill" :style="{ width: step === 1 ? '0%' : '100%' }" />
+          </div>
         </div>
 
         <!-- Step 1：账号信息 -->
         <transition name="step-slide" mode="out-in">
           <div v-if="step === 1" key="step1" class="step-content">
             <div class="step-header">
-              <h2 class="step-title">创建你的账号</h2>
-              <p class="step-sub">填写基本信息，开始你的健身旅程</p>
+              <div class="step-tag">
+                <span class="tag-dot" />
+                STEP 01 / 02
+              </div>
+              <h2 class="step-title">创建账号</h2>
+              <p class="step-sub">几个字段，开启你的减脂之旅</p>
             </div>
 
             <el-form
@@ -42,7 +67,7 @@
               :rules="rules1"
               label-position="top"
             >
-              <el-form-item label="用户名" prop="username">
+              <el-form-item label="USERNAME" prop="username">
                 <el-input
                   v-model="form.username"
                   placeholder="设置一个独特的用户名"
@@ -50,19 +75,19 @@
                   prefix-icon="User"
                 />
               </el-form-item>
-              <el-form-item label="昵称" prop="name">
+              <el-form-item label="NICKNAME" prop="name">
                 <el-input
                   v-model="form.name"
-                  placeholder="你希望我们怎么称呼你？"
+                  placeholder="想被怎么称呼？"
                   size="large"
                   prefix-icon="StarFilled"
                 />
               </el-form-item>
-              <el-form-item label="密码" prop="password">
+              <el-form-item label="PASSWORD" prop="password">
                 <el-input
                   v-model="form.password"
                   type="password"
-                  placeholder="至少6位"
+                  placeholder="至少 6 位"
                   size="large"
                   prefix-icon="Lock"
                   show-password
@@ -83,8 +108,12 @@
           <!-- Step 2：身体数据 -->
           <div v-else key="step2" class="step-content">
             <div class="step-header">
-              <h2 class="step-title">告诉我们关于你</h2>
-              <p class="step-sub">AI 将根据这些数据为你定制专属方案</p>
+              <div class="step-tag">
+                <span class="tag-dot" />
+                STEP 02 / 02
+              </div>
+              <h2 class="step-title">身体数据</h2>
+              <p class="step-sub">AI 将根据这些数据为你量身定制</p>
             </div>
 
             <el-form
@@ -94,7 +123,7 @@
               label-position="top"
             >
               <div class="form-row">
-                <el-form-item label="年龄" prop="age">
+                <el-form-item label="AGE" prop="age">
                   <el-input
                     v-model.number="form.age"
                     placeholder="岁"
@@ -102,7 +131,7 @@
                     type="number"
                   />
                 </el-form-item>
-                <el-form-item label="身高 (cm)" prop="height_cm">
+                <el-form-item label="HEIGHT (CM)" prop="height_cm">
                   <el-input
                     v-model.number="form.height_cm"
                     placeholder="cm"
@@ -112,7 +141,7 @@
                 </el-form-item>
               </div>
 
-              <el-form-item label="当前体重 (kg)" prop="weight_kg">
+              <el-form-item label="WEIGHT (KG)" prop="weight_kg">
                 <el-input
                   v-model.number="form.weight_kg"
                   placeholder="kg"
@@ -121,7 +150,7 @@
                 />
               </el-form-item>
 
-              <el-form-item label="训练目标" prop="goal">
+              <el-form-item label="GOAL" prop="goal">
                 <div class="goal-options">
                   <div
                     v-for="g in goalOptions"
@@ -136,7 +165,7 @@
                 </div>
               </el-form-item>
 
-              <el-form-item label="活动水平" prop="activity_level">
+              <el-form-item label="ACTIVITY LEVEL" prop="activity_level">
                 <el-select
                   v-model="form.activity_level"
                   placeholder="选择你的日常活动水平"
@@ -150,7 +179,7 @@
                 </el-select>
               </el-form-item>
 
-              <el-form-item label="饮食偏好" prop="dietary_pref">
+              <el-form-item label="DIETARY PREFERENCE" prop="dietary_pref">
                 <el-select
                   v-model="form.dietary_pref"
                   placeholder="选择饮食偏好"
@@ -173,7 +202,8 @@
                   :loading="loading"
                   @click="handleRegister"
                 >
-                  {{ loading ? '创建中...' : '开始训练 🚀' }}
+                  <span v-if="!loading">⚡ 开始燃烧</span>
+                  <span v-else>创建中...</span>
                 </el-button>
               </div>
             </el-form>
@@ -183,7 +213,7 @@
 
       <p class="footnote">
         已有账号？
-        <router-link to="/login" class="link">立即登录</router-link>
+        <router-link to="/login" class="link gradient-text">立即登录</router-link>
       </p>
     </div>
   </div>
@@ -239,6 +269,23 @@ const rules2 = {
   dietary_pref: [{ required: true, message: '请选择饮食偏好', trigger: 'change' }],
 }
 
+function particleStyle(n: number) {
+  const left = (n * 67) % 100
+  const delay = (n * 0.7) % 8
+  const duration = 8 + (n * 1.1) % 10
+  const size = 2 + (n % 4)
+  const hue = n % 2 === 0 ? '#10dba1' : '#ff4d8d'
+  return {
+    left: `${left}%`,
+    animationDelay: `${delay}s`,
+    animationDuration: `${duration}s`,
+    width: `${size}px`,
+    height: `${size}px`,
+    background: hue,
+    boxShadow: `0 0 ${size * 4}px ${hue}`,
+  }
+}
+
 async function nextStep() {
   await form1Ref.value?.validate()
   step.value = 2
@@ -268,117 +315,238 @@ async function handleRegister() {
   padding: 40px 24px;
   position: relative;
   overflow: hidden;
+  z-index: 0;
 }
 
-.blob {
+/* 极光 */
+.aurora {
   position: fixed;
   border-radius: 50%;
-  filter: blur(70px);
+  filter: blur(90px);
   pointer-events: none;
   opacity: 0.5;
+  mix-blend-mode: screen;
 }
-.blob--1 {
-  width: 500px; height: 500px;
-  background: radial-gradient(circle, #fcd5b8, transparent);
-  top: -150px; right: -100px;
-  animation: drift 14s ease-in-out infinite;
+.aurora--green {
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, #10dba1, transparent 60%);
+  top: -200px; right: -200px;
+  animation: aurora 20s linear infinite;
 }
-.blob--2 {
-  width: 400px; height: 400px;
-  background: radial-gradient(circle, #c8e6d4, transparent);
-  bottom: -100px; left: -80px;
-  animation: drift 11s ease-in-out infinite reverse;
+.aurora--pink {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, #ff4d8d, transparent 60%);
+  bottom: -180px; left: -180px;
+  animation: aurora 16s linear infinite reverse;
+}
+.aurora--purple {
+  width: 480px; height: 480px;
+  background: radial-gradient(circle, #c084fc, transparent 60%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  animation: float-slow 14s ease-in-out infinite;
+  opacity: 0.3;
+}
+
+.grid-overlay {
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(16,219,161,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,77,141,0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+}
+
+.scan-line {
+  position: fixed;
+  left: 0; right: 0;
+  height: 200px;
+  background: linear-gradient(to bottom, transparent, rgba(255,77,141,0.08), transparent);
+  pointer-events: none;
+  animation: scan-line 9s linear infinite;
+}
+
+.particles {
+  position: fixed; inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.particle {
+  position: absolute;
+  bottom: -10px;
+  border-radius: 50%;
+  opacity: 0;
+  animation: particle-rise linear infinite;
 }
 
 .register-wrap {
   width: 100%;
-  max-width: 520px;
+  max-width: 540px;
   position: relative;
   z-index: 10;
-  animation: slideUp 0.6s cubic-bezier(0.4,0,0.2,1);
+  animation: scale-in 0.7s var(--ease-out);
 }
 
 .logo {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 24px;
+  gap: 14px;
+  margin-bottom: 28px;
   cursor: pointer;
-  font-size: 20px;
+  user-select: none;
+}
+.logo-orb {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: var(--glow-mix);
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+.logo-flame {
+  font-size: 18px;
+  animation: flame-flicker 2s ease-in-out infinite;
+}
+.logo-ring {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid var(--green-bright);
+  opacity: 0;
+  animation: ring-pulse 2.5s ease-out infinite;
 }
 .logo-name {
   font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--accent);
+  font-size: 22px;
+  font-weight: 700;
+  background: var(--gradient-text);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shift 5s ease-in-out infinite;
 }
 
 .register-card {
-  padding: 40px;
+  padding: 44px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  position: relative;
+  overflow: hidden;
+}
+.card-shine {
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,77,141,0.06), transparent);
+  animation: shimmer 4s ease-in-out infinite;
+  pointer-events: none;
 }
 
 /* 步骤条 */
 .steps {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   margin-bottom: 36px;
   position: relative;
 }
 .step {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex: 1;
+  position: relative;
+  z-index: 1;
 }
 .step-dot {
-  width: 28px; height: 28px;
+  width: 32px; height: 32px;
   border-radius: 50%;
-  border: 2px solid var(--border);
+  border: 1.5px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font-mono);
   color: var(--text-muted);
-  background: white;
+  background: var(--bg-elevated);
   transition: var(--transition);
   flex-shrink: 0;
 }
 .step.active .step-dot {
-  border-color: var(--accent);
-  color: var(--accent);
-  box-shadow: 0 0 0 4px var(--accent-light);
+  border-color: var(--green);
+  color: var(--green-bright);
+  background: rgba(16,219,161,0.1);
+  box-shadow: 0 0 0 4px rgba(16,219,161,0.15), 0 0 20px rgba(16,219,161,0.5);
 }
 .step.done .step-dot {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--gradient-primary);
+  border-color: transparent;
   color: white;
+  box-shadow: var(--glow-mix);
 }
 .step-label {
-  font-size: 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
   color: var(--text-muted);
-  font-weight: 500;
+  font-weight: 600;
   transition: var(--transition);
 }
-.step.active .step-label { color: var(--accent); }
+.step.active .step-label { color: var(--green-bright); }
 .step.done .step-label { color: var(--text-secondary); }
 .step-line {
   position: absolute;
-  top: 14px; left: 40px;
+  top: 16px; left: 40px;
+  right: 40px;
   height: 2px;
-  background: var(--accent);
-  transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
-  z-index: -1;
+  background: var(--border);
+  z-index: 0;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.step-line-fill {
+  height: 100%;
+  background: var(--gradient-primary);
+  transition: width 0.6s var(--ease-out);
+  box-shadow: var(--glow-mix);
 }
 
 .step-header { margin-bottom: 28px; }
+.step-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--green);
+  margin-bottom: 14px;
+  padding: 4px 12px;
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-pill);
+  background: rgba(16,219,161,0.08);
+}
+.tag-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green-bright);
+  box-shadow: 0 0 8px var(--green-bright);
+  animation: pulse-soft 1.4s ease-in-out infinite;
+}
 .step-title {
   font-family: var(--font-display);
-  font-size: 26px;
-  font-weight: 600;
+  font-size: 32px;
+  font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
 }
 .step-sub {
   color: var(--text-secondary);
@@ -395,43 +563,64 @@ async function handleRegister() {
 .goal-options {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 12px;
   width: 100%;
 }
 .goal-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 16px 8px;
+  gap: 8px;
+  padding: 18px 8px;
   border-radius: var(--radius-sm);
   border: 1.5px solid var(--border);
-  background: rgba(255,255,255,0.6);
+  background: rgba(255,255,255,0.03);
   cursor: pointer;
   transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.goal-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gradient-primary);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
 }
 .goal-card:hover {
-  border-color: var(--accent);
-  background: var(--accent-light);
-  transform: translateY(-2px);
+  border-color: var(--border-bright);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(16,219,161,0.2);
 }
 .goal-card.selected {
-  border-color: var(--accent);
-  background: var(--accent-light);
-  box-shadow: 0 0 0 3px var(--accent-light);
+  border-color: transparent;
+  background: rgba(16,219,161,0.1);
+  box-shadow: 0 0 0 1.5px var(--green), 0 0 24px rgba(16,219,161,0.4);
 }
-.goal-icon { font-size: 24px; }
+.goal-card.selected::before { opacity: 0.08; }
+.goal-icon {
+  font-size: 26px;
+  position: relative;
+  z-index: 1;
+  transition: transform 0.3s ease;
+}
+.goal-card.selected .goal-icon {
+  animation: flame-flicker 2s ease-in-out infinite;
+}
 .goal-label {
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-secondary);
+  position: relative;
+  z-index: 1;
 }
-.goal-card.selected .goal-label { color: var(--accent); }
+.goal-card.selected .goal-label { color: var(--green-bright); }
 
 .submit-btn {
   width: 100%;
-  height: 52px !important;
-  border-radius: var(--radius-sm) !important;
+  height: 56px !important;
   font-size: 15px !important;
   margin-top: 8px;
 }
@@ -440,7 +629,7 @@ async function handleRegister() {
   gap: 12px;
   margin-top: 8px;
 }
-.btn-row .el-button { height: 52px !important; border-radius: var(--radius-sm) !important; }
+.btn-row .el-button { height: 52px !important; }
 .submit-btn-sm {
   flex: 1;
   font-size: 15px !important;
@@ -448,35 +637,29 @@ async function handleRegister() {
 
 .footnote {
   text-align: center;
-  margin-top: 20px;
-  color: var(--text-muted);
+  margin-top: 24px;
+  color: var(--text-secondary);
   font-size: 14px;
 }
 .link {
-  color: var(--accent);
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 600;
 }
-.link:hover { color: #4a9070; }
 
 /* 步骤切换动画 */
 .step-slide-enter-active, .step-slide-leave-active {
-  transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+  transition: all 0.4s var(--ease-out);
 }
 .step-slide-enter-from {
-  opacity: 0; transform: translateX(24px);
+  opacity: 0; transform: translateX(40px);
 }
 .step-slide-leave-to {
-  opacity: 0; transform: translateX(-24px);
+  opacity: 0; transform: translateX(-40px);
 }
 
-@keyframes drift {
-  0%, 100% { transform: translate(0,0) scale(1); }
-  33% { transform: translate(20px,-25px) scale(1.04); }
-  66% { transform: translate(-15px,15px) scale(0.96); }
-}
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+@media (max-width: 480px) {
+  .register-card { padding: 32px 24px; }
+  .step-title { font-size: 26px; }
+  .form-row { grid-template-columns: 1fr; }
 }
 </style>
