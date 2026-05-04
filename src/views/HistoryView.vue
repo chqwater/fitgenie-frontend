@@ -1,20 +1,33 @@
 <template>
   <div class="history-page">
-    <div class="blob blob--1" />
-    <div class="blob blob--2" />
+    <div class="aurora aurora--green" />
+    <div class="aurora aurora--pink" />
+    <div class="grid-overlay" />
 
     <nav class="navbar">
       <div class="nav-left" @click="router.push('/')">
         <span class="back-arrow">←</span>
+        <div class="logo-orb">
+          <span class="logo-flame">🔥</span>
+        </div>
         <span class="logo-name">FitGenie</span>
       </div>
-      <div class="nav-title">历史记录</div>
+      <div class="nav-title">
+        <span class="dot-pulse" />
+        TIMELINE · HISTORY
+      </div>
     </nav>
 
     <div class="content">
       <div class="page-header">
-        <h1 class="page-title">你的旅程</h1>
-        <p class="page-sub">每一天的坚持都在这里</p>
+        <div class="page-tag">
+          <span class="tag-dot" />
+          YOUR JOURNEY
+        </div>
+        <h1 class="page-title">
+          每一天的<span class="gradient-text">坚持</span>
+        </h1>
+        <p class="page-sub">数据不会撒谎，你的进步都在这里</p>
       </div>
 
       <!-- 加载中 -->
@@ -29,9 +42,9 @@
       <div v-else-if="!logs.length" class="empty-state card">
         <div class="empty-icon">🌱</div>
         <h3 class="empty-title">还没有记录</h3>
-        <p class="empty-desc">完成第一次打卡，开始你的健身旅程</p>
+        <p class="empty-desc">完成第一次打卡，开始你的减脂旅程</p>
         <el-button type="primary" size="large" @click="router.push('/checkin')">
-          立即打卡
+          ⚡ 立即打卡
         </el-button>
       </div>
 
@@ -45,7 +58,7 @@
             :style="{ animationDelay: `${i * 0.08}s` }"
           >
             <div class="overview-icon">{{ stat.icon }}</div>
-            <div class="overview-value">{{ stat.value }}</div>
+            <div class="overview-value gradient-text">{{ stat.value }}</div>
             <div class="overview-label">{{ stat.label }}</div>
           </div>
         </div>
@@ -53,7 +66,7 @@
         <!-- 体重趋势图 -->
         <div class="chart-section card">
           <div class="chart-header">
-            <div class="chart-title">体重趋势</div>
+            <div class="chart-title">📈 WEIGHT TREND</div>
             <div class="chart-legend">
               <span class="legend-dot" />
               <span class="legend-label">体重 (kg)</span>
@@ -65,22 +78,19 @@
               viewBox="0 0 600 160"
               preserveAspectRatio="none"
             >
-              <!-- 网格线 -->
               <line
                 v-for="i in 4"
                 :key="i"
                 x1="0" :y1="i * 32"
                 x2="600" :y2="i * 32"
-                stroke="rgba(0,0,0,0.04)"
+                stroke="rgba(255,255,255,0.04)"
                 stroke-width="1"
               />
-              <!-- 面积填充 -->
               <path
                 v-if="chartPath"
                 :d="chartArea"
                 fill="url(#areaGrad)"
               />
-              <!-- 折线 -->
               <path
                 v-if="chartPath"
                 :d="chartPath"
@@ -91,32 +101,29 @@
                 stroke-linejoin="round"
                 class="chart-line"
               />
-              <!-- 数据点 -->
               <circle
                 v-for="(pt, i) in chartPoints"
                 :key="i"
                 :cx="pt.x" :cy="pt.y"
-                r="4"
-                fill="white"
-                stroke="#5ea282"
+                r="4.5"
+                fill="#050813"
+                stroke="url(#lineGrad)"
                 stroke-width="2"
                 class="chart-dot"
               >
                 <title>{{ chartLabels[i] }}: {{ pt.weight }}kg</title>
               </circle>
-              <!-- 渐变定义 -->
               <defs>
                 <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stop-color="#5ea282" />
-                  <stop offset="100%" stop-color="#f07c5a" />
+                  <stop offset="0%" stop-color="#10dba1" />
+                  <stop offset="100%" stop-color="#ff4d8d" />
                 </linearGradient>
                 <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#5ea282" stop-opacity="0.15" />
-                  <stop offset="100%" stop-color="#5ea282" stop-opacity="0" />
+                  <stop offset="0%" stop-color="#10dba1" stop-opacity="0.25" />
+                  <stop offset="100%" stop-color="#ff4d8d" stop-opacity="0" />
                 </linearGradient>
               </defs>
             </svg>
-            <!-- X轴标签 -->
             <div class="chart-xlabels">
               <span
                 v-for="(label, i) in chartLabels"
@@ -129,13 +136,13 @@
 
         <!-- 日志列表 -->
         <div class="logs-section">
-          <div class="logs-title">打卡记录</div>
+          <div class="logs-title">📋 CHECK-IN LOG</div>
           <div class="logs-list">
             <div
               v-for="(log, i) in logs"
               :key="log.date"
               class="log-item card"
-              :style="{ animationDelay: `${i * 0.05}s` }"
+              :style="{ animationDelay: `${i * 0.04}s` }"
             >
               <div class="log-date">
                 <div class="log-day">{{ formatDay(log.date) }}</div>
@@ -161,7 +168,7 @@
                   class="log-badge"
                   :class="log.workout_done ? 'badge--done' : 'badge--skip'"
                 >
-                  {{ log.workout_done ? '✓ 训练' : '✗ 休息' }}
+                  {{ log.workout_done ? '✓ TRAINED' : '✗ REST' }}
                 </span>
                 <span class="log-badge badge--mood">
                   {{ moodEmoji[log.mood ?? 'neutral'] }}
@@ -191,10 +198,9 @@ const moodEmoji: Record<string, string> = {
   good: '😄', neutral: '😐', tired: '😴',
 }
 const moodLabel: Record<string, string> = {
-  good: '状态好', neutral: '一般', tired: '疲惫',
+  good: 'GOOD', neutral: 'OK', tired: 'TIRED',
 }
 
-// 统计概览
 const overviewStats = computed(() => {
   const validWeights = logs.value
     .map(l => l.weight_kg)
@@ -204,26 +210,25 @@ const overviewStats = computed(() => {
   const totalDays = logs.value.length
 
   const weightChange = validWeights.length >= 2
-  ? ((validWeights[validWeights.length - 1]! - validWeights[0]!)).toFixed(1)
-  : '--'
+    ? ((validWeights[validWeights.length - 1]! - validWeights[0]!)).toFixed(1)
+    : '--'
 
   const avgSteps = logs.value.length
     ? Math.round(logs.value.reduce((s, l) => s + (l.steps ?? 0), 0) / logs.value.length)
     : 0
 
   return [
-    { icon: '📅', label: '记录天数', value: `${totalDays} 天` },
-    { icon: '🏋️', label: '训练完成', value: `${workoutDays} 次` },
+    { icon: '📅', label: 'TOTAL DAYS', value: `${totalDays}` },
+    { icon: '🏋️', label: 'WORKOUTS', value: `${workoutDays}` },
     {
       icon: '📉',
-      label: '体重变化',
+      label: 'WEIGHT Δ',
       value: weightChange === '--' ? '--' : `${Number(weightChange) > 0 ? '+' : ''}${weightChange} kg`,
     },
-    { icon: '👟', label: '日均步数', value: avgSteps ? avgSteps.toLocaleString() : '--' },
+    { icon: '👟', label: 'AVG STEPS', value: avgSteps ? avgSteps.toLocaleString() : '--' },
   ]
 })
 
-// SVG 折线图数据
 const chartPoints = computed(() => {
   const weightLogs = [...logs.value]
     .reverse()
@@ -268,7 +273,7 @@ const chartArea = computed(() => {
 })
 
 function formatDay(dateStr: string) {
-  return new Date(dateStr).getDate() + '日'
+  return new Date(dateStr).getDate() + ''
 }
 function formatMonth(dateStr: string) {
   return (new Date(dateStr).getMonth() + 1) + '月'
@@ -291,26 +296,37 @@ onMounted(async () => {
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
+  z-index: 0;
 }
 
-.blob {
+.aurora {
   position: fixed;
   border-radius: 50%;
-  filter: blur(80px);
+  filter: blur(100px);
   pointer-events: none;
   opacity: 0.4;
+  mix-blend-mode: screen;
 }
-.blob--1 {
-  width: 500px; height: 500px;
-  background: radial-gradient(circle, #fcd5b8, transparent);
-  top: -120px; right: -100px;
-  animation: drift 14s ease-in-out infinite;
+.aurora--green {
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, #10dba1, transparent 60%);
+  top: -200px; right: -180px;
+  animation: aurora 22s linear infinite;
 }
-.blob--2 {
-  width: 400px; height: 400px;
-  background: radial-gradient(circle, #c8e6d4, transparent);
-  bottom: -100px; left: -80px;
-  animation: drift 11s ease-in-out infinite reverse;
+.aurora--pink {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, #ff4d8d, transparent 60%);
+  bottom: -200px; left: -180px;
+  animation: aurora 18s linear infinite reverse;
+}
+.grid-overlay {
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+  mask-image: radial-gradient(circle at center, black 30%, transparent 90%);
 }
 
 .navbar {
@@ -319,221 +335,356 @@ onMounted(async () => {
   justify-content: space-between;
   padding: 20px 40px;
   position: sticky; top: 0; z-index: 100;
-  background: rgba(254,249,243,0.85);
-  backdrop-filter: blur(16px);
+  background: rgba(5, 8, 19, 0.7);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-bottom: 1px solid var(--border);
 }
 .nav-left {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   cursor: pointer;
   color: var(--text-secondary);
   font-size: 14px;
   transition: var(--transition);
 }
-.nav-left:hover { color: var(--accent); }
-.back-arrow { font-size: 18px; }
+.nav-left:hover { color: var(--green-bright); }
+.back-arrow { font-size: 20px; }
+.logo-orb {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--glow-mix);
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+.logo-flame {
+  font-size: 14px;
+  animation: flame-flicker 2s ease-in-out infinite;
+}
 .logo-name {
   font-family: var(--font-display);
   font-size: 18px;
-  font-weight: 600;
-  color: var(--accent);
+  font-weight: 700;
+  background: var(--gradient-text);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shift 5s ease-in-out infinite;
 }
-.nav-title { font-size: 14px; font-weight: 500; color: var(--text-secondary); }
+.nav-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: var(--text-secondary);
+}
+.dot-pulse {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green-bright);
+  box-shadow: 0 0 10px var(--green-bright);
+  animation: pulse-soft 1.6s ease-in-out infinite;
+}
 
 .content {
-  max-width: 860px;
+  max-width: 880px;
   margin: 0 auto;
-  padding: 40px 24px 80px;
+  padding: 48px 24px 96px;
+  position: relative;
+  z-index: 2;
 }
 
-.page-header { margin-bottom: 32px; }
+.page-header { margin-bottom: 40px; animation: fade-up 0.6s var(--ease-out); }
+.page-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--green);
+  margin-bottom: 16px;
+  padding: 4px 12px;
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-pill);
+  background: rgba(16,219,161,0.08);
+}
+.tag-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green-bright);
+  box-shadow: 0 0 8px var(--green-bright);
+  animation: pulse-soft 1.4s ease-in-out infinite;
+}
 .page-title {
   font-family: var(--font-display);
-  font-size: 40px;
-  font-weight: 700;
+  font-size: 48px;
+  font-weight: 800;
   color: var(--text-primary);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
 }
 .page-sub { color: var(--text-secondary); font-size: 15px; }
 
 /* 加载 */
 .loading-state {
   text-align: center;
-  padding: 80px 0;
+  padding: 100px 0;
   color: var(--text-muted);
 }
 .loading-dots {
   display: flex;
   justify-content: center;
-  gap: 8px;
-  margin-bottom: 16px;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 .loading-dots span {
-  width: 8px; height: 8px;
+  width: 10px; height: 10px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--gradient-primary);
+  box-shadow: var(--glow-mix);
   animation: bounce 1.2s ease-in-out infinite;
 }
-.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+.loading-dots span:nth-child(2) { animation-delay: 0.15s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.3s; }
 
 /* 空状态 */
 .empty-state {
   text-align: center;
-  padding: 64px 40px;
+  padding: 80px 40px;
 }
-.empty-icon { font-size: 48px; margin-bottom: 16px; }
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 0 20px rgba(16,219,161,0.4));
+}
 .empty-title {
   font-family: var(--font-display);
-  font-size: 24px;
-  font-weight: 600;
+  font-size: 28px;
+  font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
-.empty-desc { color: var(--text-secondary); font-size: 14px; margin-bottom: 24px; }
+.empty-desc {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 28px;
+}
 
 /* 概览 */
 .overview-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 .overview-card {
-  padding: 20px;
+  padding: 24px 20px;
   text-align: center;
-  animation: slideUp 0.5s ease both;
+  animation: fade-up 0.6s var(--ease-out) both;
 }
-.overview-icon { font-size: 24px; margin-bottom: 10px; }
+.overview-icon {
+  font-size: 26px;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 0 8px rgba(16,219,161,0.4));
+}
 .overview-value {
   font-family: var(--font-display);
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 4px;
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 6px;
+  background-size: 200% auto;
+  animation: gradient-shift 4s ease-in-out infinite;
+  letter-spacing: -0.01em;
 }
-.overview-label { font-size: 12px; color: var(--text-muted); }
+.overview-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.16em;
+  font-weight: 600;
+}
 
 /* 图表 */
 .chart-section {
-  padding: 24px;
-  margin-bottom: 24px;
+  padding: 28px;
+  margin-bottom: 28px;
+  animation: fade-up 0.6s var(--ease-out) 0.3s both;
 }
 .chart-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 .chart-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  background: var(--gradient-text);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shift 4s ease-in-out infinite;
 }
 .chart-legend {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 .legend-dot {
   width: 8px; height: 8px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--gradient-primary);
+  box-shadow: var(--glow-green);
 }
-.legend-label { font-size: 12px; color: var(--text-muted); }
+.legend-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+}
 .weight-chart {
   width: 100%;
   height: 160px;
   display: block;
+  filter: drop-shadow(0 0 8px rgba(16,219,161,0.2));
 }
 .chart-line {
   stroke-dasharray: 1000;
   stroke-dashoffset: 1000;
-  animation: drawLine 1.5s ease forwards;
+  animation: drawLine 1.8s var(--ease-out) forwards;
 }
 .chart-dot {
   opacity: 0;
-  animation: fadeIn 0.3s ease forwards;
+  animation: fadeIn 0.4s ease forwards;
 }
 .chart-xlabels {
   display: flex;
   justify-content: space-between;
-  margin-top: 8px;
+  margin-top: 12px;
   padding: 0 10px;
 }
-.chart-xlabel { font-size: 11px; color: var(--text-muted); }
+.chart-xlabel {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+}
 
 /* 日志列表 */
 .logs-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  background: var(--gradient-text);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 16px;
+  animation: gradient-shift 4s ease-in-out infinite;
 }
 .logs-list { display: flex; flex-direction: column; gap: 10px; }
 .log-item {
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 16px 20px;
-  animation: slideUp 0.4s ease both;
+  gap: 24px;
+  padding: 20px 24px;
+  animation: fade-up 0.5s var(--ease-out) both;
 }
-.log-date { text-align: center; flex-shrink: 0; width: 44px; }
+.log-date {
+  text-align: center;
+  flex-shrink: 0;
+  width: 50px;
+}
 .log-day {
   font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--text-primary);
+  font-size: 28px;
+  font-weight: 800;
+  background: var(--gradient-text);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shift 4s ease-in-out infinite;
   line-height: 1;
 }
-.log-month { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.log-month {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  letter-spacing: 0.08em;
+}
 .log-divider {
   width: 1px;
-  height: 40px;
-  background: var(--border);
+  height: 44px;
+  background: linear-gradient(to bottom, transparent, var(--border), transparent);
   flex-shrink: 0;
 }
 .log-stats {
   display: flex;
-  gap: 20px;
+  gap: 24px;
   flex: 1;
+  flex-wrap: wrap;
 }
 .log-stat {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 .log-stat-icon { font-size: 14px; }
-.log-stat-val { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
+.log-stat-val {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
 .log-badges {
   display: flex;
   gap: 8px;
   flex-shrink: 0;
 }
 .log-badge {
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  border: 1px solid;
 }
-.badge--done { background: var(--accent-light); color: var(--accent); }
-.badge--skip { background: rgba(240,124,90,0.1); color: var(--coral); }
-.badge--mood { background: rgba(0,0,0,0.04); color: var(--text-secondary); }
+.badge--done {
+  background: rgba(16,219,161,0.1);
+  color: var(--green-bright);
+  border-color: var(--border-bright);
+}
+.badge--skip {
+  background: rgba(255,77,141,0.08);
+  color: var(--pink-bright);
+  border-color: var(--border-pink);
+}
+.badge--mood {
+  background: rgba(255,255,255,0.04);
+  color: var(--text-secondary);
+  border-color: var(--border);
+}
 
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes drift {
-  0%, 100% { transform: translate(0,0) scale(1); }
-  33% { transform: translate(20px,-25px) scale(1.04); }
-  66% { transform: translate(-15px,15px) scale(0.96); }
-}
 @keyframes bounce {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  50% { transform: translateY(-12px); }
 }
 @keyframes drawLine {
   to { stroke-dashoffset: 0; }
@@ -546,6 +697,7 @@ onMounted(async () => {
   .navbar { padding: 16px 20px; }
   .overview-grid { grid-template-columns: repeat(2, 1fr); }
   .log-item { flex-wrap: wrap; }
-  .log-stats { flex-wrap: wrap; gap: 12px; }
+  .log-stats { flex-wrap: wrap; gap: 14px; }
+  .page-title { font-size: 36px; }
 }
 </style>

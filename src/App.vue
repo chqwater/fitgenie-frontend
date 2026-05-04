@@ -14,7 +14,11 @@
 
   <!-- 全局页脚 -->
   <footer class="app-footer">
-    © {{ year }} FitGenie · 陈浩泉 Haoquan Chen · MSc, Imperial College London
+    <span class="footer-line" />
+    <span class="footer-text">
+      © {{ year }} <span class="footer-brand">FitGenie</span> · 陈浩泉 Haoquan Chen · MSc, Imperial College London
+    </span>
+    <span class="footer-line" />
   </footer>
 </template>
 
@@ -36,20 +40,44 @@ function onDirectivesUpdated(d: AssistantDirectives) {
 
 <style scoped>
 .app-footer {
-  text-align: center;
-  padding: 20px 16px 24px;
-  font-size: 12px;
-  color: var(--text-muted, #a0aec0);
-  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 28px 24px 32px;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  color: var(--text-muted, #6b7691);
+  letter-spacing: 0.12em;
   background: transparent;
   position: relative;
   z-index: 10;
 }
+.footer-line {
+  flex: 0 1 80px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border, rgba(255,255,255,0.1)), transparent);
+}
+.footer-text {
+  white-space: nowrap;
+}
+.footer-brand {
+  background: var(--gradient-text, linear-gradient(135deg, #00ffaa, #ff5ea2));
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+  animation: gradient-shift 5s ease-in-out infinite;
+}
 
-@media (max-width: 480px) {
+@media (max-width: 640px) {
   .app-footer {
-    font-size: 11px;
-    padding: 16px 12px 20px;
+    font-size: 10px;
+    padding: 20px 12px 24px;
+    gap: 8px;
   }
+  .footer-line { flex: 0 1 30px; }
+  .footer-text { white-space: normal; text-align: center; line-height: 1.6; }
 }
 </style>
